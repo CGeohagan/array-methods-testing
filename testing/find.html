@@ -1,0 +1,56 @@
+<script src="../simpletest.js"></script>
+<script> 
+// Otherwise, find returns undefined
+// callback is invoked for every index of the array from 0 to length-1 and is invoked for all indexes, not just those that have been assigned values (i.e., does not skip holes)
+// callback is invoked with three arguments
+  // value of the element
+  // index of the element
+  // array object being traversed
+// If a thisArg parameter is provided, it will be used as the this for each invocation of callback. 
+// find does not mutate the array on which it is called
+// the range of elements processed by find is set before the first invocation of callback. 
+
+
+function find(array, callback, optionalThisObject) {
+  var findCallback = callback;
+
+  if (optionalThisObject) {
+    findCallback = callback.bind(optionalThisObject);
+  }
+
+	for (var i = 0; i < array.length; i++) {
+    var returnValue = findCallback(array[i], i, array);
+		if (returnValue === true) {
+      return array[i];
+    }
+	}
+}
+
+tests({
+
+  'It should run the callback function for each index of the array until a callback returns true.': function() {
+	var numberOfTimesCallbackHasRun = 0;
+	find([1, 2, 3], function(number) {
+    numberOfTimesCallbackHasRun++;
+    if (number === 2) {
+      return true;
+    }
+  });
+  eq(numberOfTimesCallbackHasRun, 2);
+  },
+
+  'It should return the value of the element if the callback returns true': function() {
+	var numberOfTimesCallbackHasRun = 0;
+	var returnValue = find([1, 2, 3], function(number) {
+    numberOfTimesCallbackHasRun++;
+    if (number > 1) {
+      return true;
+    }
+  });
+  eq(returnValue, 2);
+  },
+
+
+
+});
+</script>
