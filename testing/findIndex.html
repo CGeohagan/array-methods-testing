@@ -1,0 +1,130 @@
+<script src="../simpletest.js"></script>
+<script> 
+
+// findIndex returns the index of the first element in the array 
+// that satisfies the provided testing function
+// otherwise, it returns -1
+function findIndex(array, callback, optionalThisObject) {
+  'use strict';
+
+  var findIndexCallback = callback;
+  var findIndexArray = [];
+
+  if (array.length === 0) {
+    return -1;
+  }
+
+  for (var i = 0; i < array.length; i++) {
+    findIndexArray.push(array[i]);
+  }
+
+  if (optionalThisObject) {
+    findIndexCallback = callback.bind(optionalThisObject);
+  } else {
+    findIndexCallback = callback.bind(undefined);
+  }
+
+	for (var i = 0; i < array.length; i++) {
+    var returnValue = findIndexCallback(findIndexArray[i], i, findIndexArray);
+		if (returnValue === true) {
+      return i;
+    } 
+	}
+
+  return -1;
+}
+
+tests({
+
+  'It should run the callback function for each index of the array until a callback returns true.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+
+    findIndex([1, 2, 3], function(number) {
+      numberOfTimesCallbackHasRun++;
+      return number === 2;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 2);
+  },
+
+  'It should return the index when it finds an element with a truthy value.': function() {
+    var returnValue = findIndex([1, 2, 3], function(number) {
+      return number > 1;
+    });
+
+    eq(returnValue, 1);
+  },
+
+  'It should return -1 if the callback never returns a truthy value.': function() {
+    var returnValue = findIndex([1, 2, 3], function(number) {
+      return number > 4;
+    });
+
+    eq(returnValue, -1);
+  },
+
+  'It should return -1 if the array has a length of 0.': function() {
+    var returnValue = findIndex([], function(number) {
+    });
+
+    eq(returnValue, -1);
+  },
+
+  'It should run callback from all indexes, even without values.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+
+    findIndex([, 3, , 4], function(number) {
+      numberOfTimesCallbackHasRun++;
+    });
+    eq(numberOfTimesCallbackHasRun, 4);
+  },
+
+  'It should pass in the ith element as the first argument to the callback function': function() {
+    findIndex([1], function(number) {
+      eq(number, 1);
+    });
+  },
+
+  'It should pass in the index as the second argument to the callback function': function() {
+    findIndex([1], function(number, index) {
+      eq(index, 0);
+    });
+  },
+
+  'It should pass in the array as the third argument to the callback function': function() {
+    findIndex([1], function(number, index, array) {
+      eq(array[0], 1);
+    });
+  },
+
+  'It should have an optional this object': function() {
+    findIndex([1], function() {
+      eq(this.cookies, 'are delicious');
+    }, {cookies: 'are delicious'});
+  },
+
+  'It should not process elements appended to the array after the call for findIndex begins.': function() {
+    var originalArray = [1, 2, 3];
+    var numberOfTimesCallbackHasRun = 0;
+
+    findIndex(originalArray, function(number, index, array) {
+      array.push(4);
+      numberOfTimesCallbackHasRun++;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'If an existing, unvisited element of the array is changed by callback, its value passed to the callback will be the value at the time that findIndex visits that elements index.': function() {
+    var originalArray = [1, 2, 3];
+
+    findIndex(originalArray, function(number, index, array) {
+      array[1] = 5;
+      if (index === 1) {
+        eq(number, 5);
+      }
+    });
+  },
+
+});
+</script>

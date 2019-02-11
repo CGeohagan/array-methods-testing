@@ -14,7 +14,7 @@ function find(array, callback, optionalThisObject) {
   }
 
 	for (var i = 0; i < array.length; i++) {
-    var returnValue = findCallback(array[i], i, findArray);
+    var returnValue = findCallback(findArray[i], i, findArray);
 		if (returnValue === true) {
       return findArray[i];
     } 
@@ -108,6 +108,17 @@ tests({
       array.push(1);
     });
     eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'If an existing, unvisited element of the array is changed by callback, its value passed to the callback will be the value at the time that findIndex visits that elements index.': function() {
+    var originalArray = [1, 2, 3];
+
+    find(originalArray, function(number, index, array) {
+      array[1] = 5;
+      if (index === 1) {
+        eq(number, 5);
+      }
+    });
   },
 
 });
