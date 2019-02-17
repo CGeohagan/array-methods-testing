@@ -2,10 +2,10 @@
 
 Using a slightly updated version of [JSTinyTest](https://github.com/joewalnes/jstinytest) made during the Watch and Code [course](https://watchandcode.com/). 
 
-- Array.prototype.find
-- Array.prototype.findIndex
-- Array.prototype.every
-- Array.prototype.some
+- Array.prototype.find - done
+- Array.prototype.findIndex - done
+- Array.prototype.every - done
+- Array.prototype.some - done
 - Array.prototype.reduceRight
 - Array.prototype.concat
 - Array.prototype.indexOf
