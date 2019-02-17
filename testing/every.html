@@ -1,0 +1,131 @@
+<script src="../simpletest.js"></script>
+<script> 
+
+function every(array, callback, optionalThisObject) {
+  var arrayIndexes = Object.keys(array);
+  var everyCallback = callback;
+  var length = array.length;
+  var startingIndex = 0;
+
+  if (optionalThisObject) {
+    everyCallback = callback.bind(optionalThisObject);
+  } else {
+    everyCallback = callback.bind(undefined);
+  }
+
+  // We want to skip holes at the beginning of the array.
+  while (startingIndex in array === false && startingIndex < array.length) {
+    startingIndex++;
+  }
+
+	for (var i = startingIndex; i < length; i++) {
+    if (i in array) {
+      var returnValue = everyCallback(array[i], i, array);
+      if (!returnValue) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
+tests({
+
+  'It runs the callback function once for each element until it finds a falsey value.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+
+    every([1, 2, 3, 4], function(number) {
+      numberOfTimesCallbackHasRun++;
+      return number < 3;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'It returns false if an element with a falsey value is found.': function() {
+    var returnValue = every([1, 2, 3, 4], function(number) {
+      return number < 3;
+    });
+
+    eq(returnValue, false);
+  },
+
+  'It returns true if it there are no falsey values found.': function() {
+    var returnValue = every([1, 2, 3, 4], function(number) {
+      return number < 10;
+    });
+
+    eq(returnValue, true);
+  },
+
+  'It should pass in the ith element as the first argument to the callback function.': function() {
+    every([1], function(number) {
+      eq(number, 1);
+    }); 
+  },
+
+  'It should pass in the index as the second argument to the callback function': function() {
+    every([1], function(number, index) {
+      eq(index, 0);
+    });
+  },
+
+  'It should pass in the array as the third argument to the callback function': function() {
+    var originalArray = [1];
+    every(originalArray, function(number, index, array) {
+      eq(originalArray[1], array[1]);
+    });
+  },
+
+  'It has an optional this argument': function() {
+    every([1, 2, 3], function() {
+      eq(this.cats, 'are the best');
+    }, {cats: 'are the best'});
+  },
+
+  'It does not run callback for holes.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+    every([, 1, , 2, , 3], function(number) {
+      numberOfTimesCallbackHasRun++;
+      return number < 4;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'It only runs callback on the range of elements set before first invocation.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+    every([1, 2, 3], function(number, index, array) {
+      array.push(3);
+      numberOfTimesCallbackHasRun++;
+      return number < 4;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'It only runs callback on the range of elements set before first invocation.': function() {
+    var numberOfTimesCallbackHasRun = 0;
+    every([1, 2, 3], function(number, index, array) {
+      array.push(3);
+      numberOfTimesCallbackHasRun++;
+      return number < 4;
+    });
+
+    eq(numberOfTimesCallbackHasRun, 3);
+  },
+
+  'If an existing, unvisited element of the array is changed by callback, its value passed to the callback will be the value at the time that findIndex visits that elements index.': function() {
+    every([1, 2, 3], function(number, index, array) {
+      array[2] = 5;
+      if (index === 2) {
+        eq(number, 5);
+      }
+      return number < 4;
+    });
+
+  },
+
+});
+</script>

@@ -26,7 +26,7 @@ function findIndex(array, callback, optionalThisObject) {
 
 	for (var i = 0; i < array.length; i++) {
     var returnValue = findIndexCallback(findIndexArray[i], i, findIndexArray);
-		if (returnValue === true) {
+		if (returnValue) {
       return i;
     } 
 	}
