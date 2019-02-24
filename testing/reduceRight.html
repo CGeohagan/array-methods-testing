@@ -1,0 +1,142 @@
+<script src="../simpletest.js"></script>
+<script>
+
+	function reduceRight(array, callback, initialValue) {
+		var arrayIndexes = Object.keys(array);
+    var length = array.length;
+    var resultSoFar = initialValue;
+    var startingIndex = length - 1;
+		var reverseArray = array.slice(0).reverse();
+
+		// No initialValue.
+		if (arguments.length < 3) {
+			// Array is empty, throw TypeError.
+			if (arrayIndexes.length === 0) {
+				throw new TypeError('ReduceRight of empty array with no initial value');
+			}
+
+			// If array has one element, just return it.
+			if (arrayIndexes.length === 1) {
+				var onlyIndex = arrayIndexes[0];
+				var onlyElement = array[onlyIndex];
+				return onlyElement;
+			}
+
+			// We want to skip holes at the beginning of the array.
+			while (startingIndex in array === false && startingIndex < length) {
+				startingIndex--;
+			}
+
+			resultSoFar = array[startingIndex];
+			startingIndex--;
+
+		// Has initialValue
+		} else {
+			// Check if array is empty
+			if (arrayIndexes.length === 0) {
+				return initialValue;
+			}
+		}
+
+		for (var i = startingIndex; i >= 0; i--) {
+			if (i in array) {
+				resultSoFar = callback(resultSoFar, array[i], i, array);
+			}
+		}
+
+		return resultSoFar;
+	}
+
+	tests({
+		'If initialValue, callback should run array.length times.': function() {
+			var numberOfTimesCallbackHasRun = 0;
+			reduceRight([1, 2], function() {
+				numberOfTimesCallbackHasRun++;
+			}, 0);
+			eq(numberOfTimesCallbackHasRun, 2);
+		},
+
+    'It does not run callback on holes in the array.': function() {
+			var numberOfTimesCallbackHasRun = 0;
+			reduceRight([, 1, , 2,], function() {
+				numberOfTimesCallbackHasRun++;
+			}, 0);
+			eq(numberOfTimesCallbackHasRun, 2);
+		},
+
+    'It should pass initialValue as first parameter to callback. If initial value is provided, the resultSoFar will be equal to initialValue when the function is first called.': function() {
+			reduceRight([1], function(initialValue) {
+				eq(initialValue, 2);
+			}, 2);
+		},
+
+    'If initial value is provided, currentValue will be equal to the last value in the array.': function() {
+      var testArray = [1, 2, 3];
+			var resultSoFar = reduceRight(testArray, function(previousValue, currentValue, currentIndex) {
+        if (currentIndex === 2) {
+          eq(currentValue, 3);
+        }
+			}, 2);
+		},
+
+    'If no initialValue was provided, then resultSoFar will be equal to the last value.': function() {
+      var testArray = [1, 2, 3];
+			var resultSoFar = reduceRight(testArray, function(previousValue, currentValue, currentIndex) {
+        // currentIndex should be array.length - 1 (initial index) - 1 
+        if (currentIndex === 1) {
+          eq(previousValue, 3);
+        }
+			});
+		},
+
+    'If no initialValue was provided, currentValue will be equal to second-to-last value.': function() {
+      var testArray = [1, 2, 3];
+			var resultSoFar = reduceRight(testArray, function(previousValue, currentValue, currentIndex) {
+        if (currentIndex === 1) {
+          eq(currentValue, 2);
+        }
+			});
+		},
+
+    'It should pass currentIndex as third parameter to callback.': function() {
+			reduceRight([1], function(initialValue, currentValue, currentIndex) {
+				eq(currentIndex, 0);
+			}, 2);
+		},
+
+    'It should pass array as fourth parameter to callback.': function() {
+      var testArray = [1, 2, 3];
+			reduceRight(testArray, function(previousValue, currentValue, currentIndex, arrayToReduce) {
+				eq(testArray, arrayToReduce);
+			}, 2);
+		},
+
+		'If array is empty, and no initialValue, throw TypeError.': function() {
+			var isTypeError = false;
+			try {
+				reduceRight([], function() {})
+			} catch(e) {
+				var isTypeError = (e instanceof TypeError);
+			}
+			eq(isTypeError, true);
+		},
+
+    'If array has only one element and no initial value is provided, the solo value will be returned.': function() {
+			var returnValue =	reduceRight([1], function() {});
+			eq(returnValue, 1);
+		},
+
+    'If array is empty and initialValue is provided, the solo value will be returned.': function() {
+			var returnValue =	reduceRight([], function() {}, 1);
+			eq(returnValue, 1);
+		},
+
+    'It should actually reduce.': function() {
+			var returnValue =	reduceRight([1, 2, 3], function(a, b) {
+        return a + b;
+      }, 5);
+			eq(returnValue, 11);
+		},
+	});
+
+</script>

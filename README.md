@@ -6,7 +6,7 @@ Using a slightly updated version of [JSTinyTest](https://github.com/joewalnes/js
 - Array.prototype.findIndex - done
 - Array.prototype.every - done
 - Array.prototype.some - done
-- Array.prototype.reduceRight
+- Array.prototype.reduceRight - done
 - Array.prototype.concat
 - Array.prototype.indexOf
 - Array.prototype.lastIndexOf

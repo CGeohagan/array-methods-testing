@@ -70,8 +70,6 @@
 		return initialValue + ' ' + currentValue;
 	}
 
-	console.log(reduce(['cakes', 'are', 'delicious', ], hihello));
-
 	tests({
 		'If initialValue, callback should run array.length times.': function() {
 			var numberOfTimesCallbackHasRun = 0;
@@ -131,6 +129,7 @@
 			eq(reduceResult, initialValue);
 			eq(numberOfTimesCallbackHasRun, 0);
 		}, 
+
 		'If no initialValue, and array has one element, it should return that element without calling callback.': function() {
 			var numberOfTimesCallbackHasRun = 0;
 			var reduceResult = reduce([1], function() {
@@ -146,6 +145,7 @@
 			}, 0);
 			eq(sum, 6);
 		},
+		
 		'If initialValue, it should exclude holes.': function() {
 			var array = [, 1, 2, , 3];
 			var sum = reduce(array, function(a, b) {
@@ -160,6 +160,7 @@
 			});
 			eq(sum, 6);
 		},
+
 		'If array is empty, and no initialValue, throw TypeError.': function() {
 			var isTypeError = false;
 			try {
@@ -169,7 +170,8 @@
 			}
 			eq(isTypeError, true);
 		},
-		'If should pass array as fourth argument to callback.': function() {
+
+		'It should pass array as fourth argument to callback.': function() {
 			var testArray = [1, 2];
 			reduce(testArray, function(previousValue, currentValue, currentIndex, arrayToReduce) {
 				eq(arrayToReduce, testArray);
@@ -181,16 +183,3 @@
 
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
